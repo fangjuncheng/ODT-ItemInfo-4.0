@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using SPTarkov.Server.Core.Models.Common;
 
 namespace ItemInfo.Models;
@@ -55,11 +54,12 @@ public class ModConfig
 		[JsonPropertyName("bypassKeysRecolor")]
 		public bool BypassKeysRecolor { get; set; }
 		[JsonPropertyName("customRarity")]
-		public Dictionary<string, int> CustomRarity { get; set; }
+		public Dictionary<string, int> CustomRarity { get; set; } = new();
 	}
 	
 	[JsonPropertyName("RarityRecolorBlacklist")]
-	public List<MongoId> RarityRecolorBlacklist { get; set; }
+	public List<MongoId> RarityRecolorBlacklist { get; set; } = [];
+	
 	[JsonPropertyName("ArmorInfo")]
 	public ArmorInfo ModArmorInfo { get; set; } = new();
 	public class ArmorInfo
@@ -198,7 +198,7 @@ public class ModConfig
 		[JsonPropertyName("enabled")]
 		public bool Enabled { get; set; }
 	}
-	
+
 	[JsonPropertyName("BlacklistedTradersFromRarityCalc")]
-	public List<MongoId> BlacklistedTradersFromRarityCalc { get; set; }
+	public List<MongoId> BlacklistedTradersFromRarityCalc { get; set; } = [];
 }

@@ -4,21 +4,23 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using ItemInfo.Models;
+using SPTarkov.Common.Models.Logging;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Eft.Hideout;
 using SPTarkov.Server.Core.Models.Enums;
 using SPTarkov.Server.Core.Models.Enums.Hideout;
-using SPTarkov.Server.Core.Models.Spt.Templates;
+using SPTarkov.Server.Core.Models.Spt.Tables;
 using SPTarkov.Server.Core.Models.Utils;
 using SPTarkov.Server.Core.Services;
+using SPTarkov.Server.Core.Services.Items;
+using SPTarkov.Server.Core.Services.Locales;
 using SPTarkov.Server.Core.Utils.Json;
 
 namespace ItemInfo;
 
 public static class Utils
 {
-	private static DatabaseService _databaseService = null!;
 	private static LocaleService _localeService = null!;
 	private static ItemBaseClassService _itemBaseClassService = null!;
 	private static ISptLogger<ItemInfo> _logger = null!;
@@ -27,20 +29,23 @@ public static class Utils
 	private static string _userLocale = null!;
 	private static ModTranslation _translation = null!;
 	private static Dictionary<MongoId, Quest> _quests = null!;
-	private static Templates _templates = null!;
+	private static TemplateTable _templateTable = null!;
 	private static Dictionary<MongoId, TemplateItem> _items = null!;
 	private static List<HandbookItem> _handbookItems = null!;
 	private static Dictionary<MongoId, Trader> _traders = null!;
 	public static Dictionary<string, Dictionary<string, string>> _locales = new();
 	private static HashSet<string> _serverSupportedLocale = null!;
-	private static Dictionary<string, LazyLoad<Dictionary<string, string>>> _lazyloadList = new();
+	private static Dictionary<string, LazyLoad<GlobalLocaleDictionary>> _lazyloadList = new();
 	private static HideoutProductionData _hideoutProductionData = null!;
 	private static List<HideoutArea> _hideoutAreas = null!;
 	private static HideoutSettingsBase _hideoutSettingsBase = null!;
 	private static List<Trader> _tradersList = null!;
 	private static ModConfig _config = null!;
 
-	public static void Initialize(DatabaseService databaseService, 
+	public static void Initialize(TemplateTable templateTable,
+								LocaleTable localeTable,
+								TradersTable tradersTable,
+								HideoutTable hideoutTable,
 								LocaleService localeService, 
 								ItemBaseClassService itemBaseClassService, 
 								ISptLogger<ItemInfo> logger,
@@ -51,7 +56,6 @@ public static class Utils
 								Dictionary<MongoId, Quest> quest,
 								ModConfig config)
 	{
-		_databaseService = databaseService;
 		_localeService = localeService;
 		_itemBaseClassService = itemBaseClassService;
 		_logger = logger;
@@ -60,20 +64,20 @@ public static class Utils
 		_userLocale = userLocale;
 		_translation = translation;
 		_quests = quest;
-		_templates = databaseService.GetTemplates();
-		_items = databaseService.GetItems();
-		_handbookItems = databaseService.GetHandbook().Items;
-		_traders = databaseService.GetTraders();
+		_items = templateTable.Items;
+		_templateTable = templateTable;
+		_handbookItems = templateTable.Handbook.Items;
+		_traders = tradersTable;
 		_serverSupportedLocale = _localeService.GetServerSupportedLocales();
-		_hideoutProductionData = databaseService.GetHideout().Production;
-		_hideoutAreas = databaseService.GetHideout().Areas;
-		_hideoutSettingsBase = databaseService.GetHideout().Settings;
+		_hideoutProductionData = hideoutTable.Production;
+		_hideoutAreas = hideoutTable.Areas;
+		_hideoutSettingsBase = hideoutTable.Settings;
 		_config = config;
 
 		foreach (string lang in _translation.Language.Keys)
 		{
 			_locales[lang] = _localeService.GetLocaleDb(lang);
-			_lazyloadList[lang] = _databaseService.GetLocales().Global[lang];
+			_lazyloadList[lang] = localeTable.Global[lang];
 		}
 		
 		_tradersList = [_traders[Traders.THERAPIST],
@@ -197,9 +201,9 @@ public static class Utils
     {
 	    try
 	    {
-		    if (_templates.Prices.ContainsKey(itemId) &&
-		        _templates.Prices[itemId] >= 0)
-			    return _templates.Prices[itemId];
+		    if (_templateTable.Prices.ContainsKey(itemId) &&
+		        _templateTable.Prices[itemId] >= 0)
+			    return _templateTable.Prices[itemId];
 
 		    return GetItemInHandbook(itemId)?.Price >= 0 ? GetItemInHandbook(itemId)?.Price : 0;
 	    }
@@ -220,7 +224,7 @@ public static class Utils
 		    _templates.Prices[itemId] : GetItemBestTrader(itemId).price;
     }*/
     
-    public static void AddLocaleTransformer(Dictionary<string, LazyLoad<Dictionary<string, string>>> lazyloadList,
+    public static void AddLocaleTransformer(Dictionary<string, LazyLoad<GlobalLocaleDictionary>> lazyloadList,
 											string lang,
 											string type,
 											string place,
