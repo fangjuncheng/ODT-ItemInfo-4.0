@@ -768,7 +768,7 @@ public static class Utils
 		{
 			MongoId questId = questDict.Key;
 			Quest quest = questDict.Value;
-			string? questName = quest.QuestName;
+			string? questName = _locales[locale].GetValueOrDefault(questId + " Name", questId);
 			List<QuestCondition>? questCondition = quest.Conditions.AvailableForFinish;
 			
 			if (questName is null ||
@@ -797,9 +797,9 @@ public static class Utils
 				questString.Append(_translation.Language[locale]["Found"] +
 				                   " " +
 				                   ((bool)onlyFoundInRaid
-					                   ? "(✔) "
-					                   : "") +
-				                   "x" +
+								   ? "(✔) "
+								   : "") +
+								   "x" +
 				                   condition.Value +
 				                   " > " +
 				                   questName +

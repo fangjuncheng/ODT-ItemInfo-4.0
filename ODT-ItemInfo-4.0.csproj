@@ -7,6 +7,7 @@
         <Nullable>enable</Nullable>
         <OutputType>Library</OutputType>
         <Version>0.0.1</Version>
+        <IsPackable>true</IsPackable>
         <!-- The two lines below will set the output path for the binaries -->
         <OutputPath>bin\$(Configuration)\$(ProjectName)\$(AssemblyName)\</OutputPath>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
@@ -20,8 +21,11 @@
     </ItemGroup>
 
     <PropertyGroup>
-        <SPTPath>F:\SPT_4.1_Server\SPT_Runtime</SPTPath>
+        <SPTPath>$(SPT_ROOT)\SPT_Runtime</SPTPath>
     </PropertyGroup>
+
+    <!-- dotnet clean -->
+    <!-- dotnet build -c Release -->
 
     <Target Name="ForceBuild" BeforeTargets="CoreCompile" Inputs="" Outputs="" />
 
@@ -99,11 +103,11 @@
                 ContinueOnError="false" />
 
         <!-- Copy config folder, preserving directory structure -->
-        <Copy
+        <!-- <Copy
                 SourceFiles="@(ConfigFolder)"
                 DestinationFiles="@(ConfigFolder->'$(StagingDir)\config\%(RecursiveDir)%(Filename)%(Extension)')"
                 SkipUnchangedFiles="true"
-                ContinueOnError="false" />
+                ContinueOnError="false" /> -->
 
         <Message Importance="high" Text="Staging complete." />
 

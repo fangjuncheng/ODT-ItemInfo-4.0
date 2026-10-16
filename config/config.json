@@ -1,6 +1,6 @@
 {
 	"_SELECT YOUR LANGUAGE IN UserLocale CONFIGURATION BELOW. USE ONE OF THESE LANGUAGE CODES": "ch, cz, en, es-mx, es, fr, ge, hu, it, jp, kr, pl, po, ru, sk, tu",
-	"UserLocale": "en",
+	"UserLocale": "ch",
 	"HideLanguageAlert": true,
 	"FormatPrice": true,
 	"PricesInfo": {
@@ -18,7 +18,7 @@
 		"addTierNameToPricesInfo": true,
 		"fallbackValueBasedRecolor": true,
 		"_description_fallbackValueBasedRecolor": "If item is unbuyable from traders, fallsback to slot value rarity tiering.",
-		"bypassAmmoRecolor": false,
+		"bypassAmmoRecolor": true,
 		"bypassKeysRecolor": false,
 		"customRarity": {
 			"59faff1d86f7746c51718c9c": 6,
@@ -59,7 +59,7 @@
 	"MarkValuableItems": {
 		"_description": "Marks most valuable items by adding symbols ★ and ☆ to item names and inventory icons based on item per-slot value (configured below) when sold to traders OR fleamarket AVG price. Defaults: ☆ - good items - item value per slot is more then 10k when sold to vendors, or more then 15k on flea market. ★ best items - item value per slot is more then 20k to vendors, or more then 30k on flea market. Use really high values if you want to disable certain type of highlights, eg flea ones. Option to *always* mark banned items with a ★.",
 		"_example": "",
-		"enabled": true,
+		"enabled": false,
 		"addToName": true,
 		"addToShortName": true,
 		"BestValueMark": "★",
@@ -88,7 +88,7 @@
 	},
 	"AdvancedAmmoInfo": {
 		"_description": "Adds hidden and advanced ammo stats. Way too descriptive, disabled by default.",
-		"enabled": true
+		"enabled": false
 	},
 	"ContainerInfo": {
 		"_description": "Adds slot efficiency calculation for rigs, backpacks and containers (number of internal slots / item size).",
